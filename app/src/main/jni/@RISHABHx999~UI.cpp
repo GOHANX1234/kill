@@ -125,93 +125,40 @@ void *getRealAddr(ulong offset) {
 #include <cmath>
 
 
-bool RainbowToggleSwitch(const char* label, bool* v)
+bool StyledCheckbox(const char* label, bool* v)
 {
     ImGui::PushID(label);
-
-    static float knob_anim = 0.0f;
-    static float hue_offset = 0.0f;
-
-    float width = 110.0f;
-    float height = 40.0f;
-    float knob_radius = 16.0f;
-
-    ImVec2 p = ImGui::GetCursorScreenPos();
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-    ImU32 bgColor = *v ? IM_COL32(0, 200, 150, 255) : IM_COL32(180, 180, 180, 255);
-    ImU32 textColor = IM_COL32(0, 0, 0, 255);
-
-    // Background
-    draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), bgColor, height * 0.5f);
-
-    // Animate knob position
-    float target = *v ? 1.0f : 0.0f;
-    knob_anim = ImLerp(knob_anim, target, 0.1f); // smoothing
-
-    float knob_x = ImLerp(p.x + knob_radius + 6, p.x + width - knob_radius - 6, knob_anim);
-    ImVec2 knob_center = ImVec2(knob_x, p.y + height / 2);
-
-    // Rotate rainbow
-    hue_offset += 0.01f;
-    if (hue_offset > 1.0f) hue_offset -= 1.0f;
-
-    // Draw rainbow circle
-    float inner_radius = 0.0f;
-    float outer_radius = knob_radius;
-    int segments = 100;
-    for (int i = 0; i < segments; ++i)
-    {
-        float a0 = (i / (float)segments) * 2.0f * IM_PI;
-        float a1 = ((i + 1) / (float)segments) * 2.0f * IM_PI;
-
-        ImVec2 p0 = ImVec2(knob_center.x + cosf(a0) * inner_radius, knob_center.y + sinf(a0) * inner_radius);
-        ImVec2 p1 = ImVec2(knob_center.x + cosf(a1) * inner_radius, knob_center.y + sinf(a1) * inner_radius);
-        ImVec2 p2 = ImVec2(knob_center.x + cosf(a1) * outer_radius, knob_center.y + sinf(a1) * outer_radius);
-        ImVec2 p3 = ImVec2(knob_center.x + cosf(a0) * outer_radius, knob_center.y + sinf(a0) * outer_radius);
-
-        float hue = fmodf(i / (float)segments + hue_offset, 1.0f);
-        ImU32 col = ImColor::HSV(hue, 1.0f, 1.0f);
-
-        draw_list->AddQuadFilled(p0, p1, p2, p3, col);
-    }
-
-    // Text ON/OFF
-    const char* text = *v ? "ON" : "OFF";
-    ImVec2 textSize = ImGui::CalcTextSize(text);
-    ImVec2 textPos = ImVec2(
-        *v ? (p.x + 12) : (p.x + width - textSize.x - 12),
-        p.y + (height - textSize.y) / 2
-    );
-    draw_list->AddText(textPos, textColor, text);
-
-    // Toggle button (interaction)
-    ImGui::InvisibleButton("##switch", ImVec2(width, height));
-    if (ImGui::IsItemClicked())
-        *v = !*v;
-
-    // Ending format matching CustomToggleSwitch
-    ImGui::SameLine();
-    ImGui::Text(label);
-
+    
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.20f, 0.15f, 0.25f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.25f, 0.15f, 0.30f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, ImColor(200, 0, 255, 255).Value);
+    
+    bool changed = ImGui::Checkbox(label, v);
+    
+    ImGui::PopStyleColor(4);
     ImGui::PopID();
-    return *v;
+    
+    return changed;
 }
 
-// --- Left Nav Button (tab button) ---
-static bool LeftNavButton(const char* label, const char* icon, bool selected, ImVec2 size = ImVec2(160, 65)) {
+// --- Left Nav Button (tab button) - Icon Only Version ---
+static bool LeftNavButton(const char* label, const char* icon, bool selected, ImVec2 size = ImVec2(80, 70)) {
     ImDrawList* dl = ImGui::GetWindowDrawList();
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
 
-    ImU32 bg_col = selected ? IM_COL32(26, 26, 26, 200) : IM_COL32(26, 26, 26, 200);
-    dl->AddRectFilled(bb.Min, bb.Max, bg_col, 10.0f);
-    dl->AddRect(bb.Min, bb.Max, IM_COL32(200, 0, 255, 255), 10.0f, ImDrawFlags_RoundCornersAll, 2.0f);
-
-    ImVec2 icon_pos(pos.x + 16, pos.y + 20);
-    ImVec2 text_pos(icon_pos.x + 28, pos.y + 20);
-    dl->AddText(icon_pos, IM_COL32(255,255,255,255), icon);
-    dl->AddText(text_pos, IM_COL32(255,255,255,255), label);
+    ImU32 icon_bg_col = IM_COL32(200, 0, 255, 255);
+    
+    ImVec2 icon_rect_min(pos.x + 8, pos.y + 8);
+    ImVec2 icon_rect_max(pos.x + size.x - 8, pos.y + size.y - 8);
+    dl->AddRectFilled(icon_rect_min, icon_rect_max, icon_bg_col, 10.0f);
+    
+    ImFont* small_font = ImGui::GetIO().Fonts->Fonts[0];
+    ImVec2 icon_size = small_font->CalcTextSizeA(20.0f, FLT_MAX, 0.0f, icon);
+    ImVec2 icon_pos(pos.x + (size.x - icon_size.x) * 0.5f, pos.y + (size.y - icon_size.y) * 0.5f - 1);
+    
+    dl->AddText(small_font, 20.0f, icon_pos, IM_COL32(255,255,255,255), icon);
 
     ImGui::InvisibleButton(label, size);
     bool clicked = ImGui::IsItemClicked();
@@ -238,56 +185,59 @@ ImGui_ImplOpenGL3_Init("#version 300 es");
 ImGuiStyle& style = ImGui::GetStyle();
 ImVec4* colors = style.Colors;
 
-// ====== WINDOW COLORS ======
-colors[ImGuiCol_WindowBg]         = ImColor(26, 26, 26, 200); // @RISHABHx999
-colors[ImGuiCol_ChildBg]          = ImColor(26, 26, 26, 200); // @RISHABHx999
-colors[ImGuiCol_PopupBg]          = ImColor(26, 26, 26, 200); // @RISHABHx999
-colors[ImGuiCol_Border]           = ImColor(200, 0, 255, 200); // @RISHABHx999
+// ====== WINDOW COLORS - PURPLE/MAGENTA THEME ======
+colors[ImGuiCol_WindowBg]         = ImColor(15, 15, 20, 245);     // Dark purple background
+colors[ImGuiCol_ChildBg]          = ImColor(18, 18, 25, 240);     // Slightly lighter dark
+colors[ImGuiCol_PopupBg]          = ImColor(20, 20, 28, 250);     // Popup dark background
+colors[ImGuiCol_Border]           = ImColor(200, 0, 255, 0);      // No borders
 colors[ImGuiCol_BorderShadow]     = ImVec4(0, 0, 0, 0);
+colors[ImGuiCol_TitleBg]          = ImColor(120, 40, 180, 255);   // Full purple/magenta title
+colors[ImGuiCol_TitleBgActive]    = ImColor(150, 50, 200, 255);   // Active purple/magenta title
+colors[ImGuiCol_TitleBgCollapsed] = ImColor(100, 30, 160, 255);   // Collapsed purple/magenta
 
-// ====== BUTTON COLORS ======
-colors[ImGuiCol_Button]           = ImColor(108, 82, 255, 255);  // @RISHABHx999
-colors[ImGuiCol_ButtonHovered]    = ImColor(108, 82, 255, 255);  // @RISHABHx999
-colors[ImGuiCol_ButtonActive]     = ImColor(108, 82, 255, 255);  // @RISHABHx999
+// ====== BUTTON COLORS - PURPLE/MAGENTA ======
+colors[ImGuiCol_Button]           = ImColor(120, 40, 180, 255);   // Purple button
+colors[ImGuiCol_ButtonHovered]    = ImColor(160, 60, 220, 255);   // Lighter purple on hover
+colors[ImGuiCol_ButtonActive]     = ImColor(200, 0, 255, 255);    // Magenta when active
 
 // ====== TEXT COLORS ======
-colors[ImGuiCol_Text]             = ImVec4(1.00f, 1.00f, 1.00f, 1.00f); // @RISHABHx999
-colors[ImGuiCol_TextDisabled]     = ImVec4(0.50f, 0.50f, 0.50f, 1.00f); // @RISHABHx999
+colors[ImGuiCol_Text]             = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+colors[ImGuiCol_TextDisabled]     = ImVec4(0.50f, 0.40f, 0.55f, 1.00f);
 
-// ====== FRAME COLORS ======
-colors[ImGuiCol_FrameBg]          = ImVec4(0.08f, 0.08f, 0.08f, 1.00f); // @RISHABHx999
-colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.08f, 0.08f, 0.08f, 1.00f); // @RISHABHx999
-colors[ImGuiCol_FrameBgActive]    = ImVec4(0.08f, 0.08f, 0.08f, 1.00f); // @RISHABHx999
+// ====== FRAME COLORS - DARK WITH PURPLE TINT ======
+colors[ImGuiCol_FrameBg]          = ImVec4(0.12f, 0.10f, 0.15f, 1.00f);
+colors[ImGuiCol_FrameBgHovered]   = ImVec4(0.16f, 0.12f, 0.20f, 1.00f);
+colors[ImGuiCol_FrameBgActive]    = ImVec4(0.20f, 0.15f, 0.25f, 1.00f);
 
-// ====== TAB / HEADER ======
-colors[ImGuiCol_Header]           = ImColor(200, 0, 255, 255); // @RISHABHx999
-colors[ImGuiCol_HeaderHovered]    = ImColor(200, 0, 255, 255); // @RISHABHx999
-colors[ImGuiCol_HeaderActive]     = ImColor(200, 0, 255, 255); // @RISHABHx999
+// ====== TAB / HEADER - MAGENTA ======
+colors[ImGuiCol_Header]           = ImColor(180, 0, 220, 200);
+colors[ImGuiCol_HeaderHovered]    = ImColor(200, 0, 255, 220);
+colors[ImGuiCol_HeaderActive]     = ImColor(220, 40, 255, 255);
 
-// ====== SLIDER / CHECKBOX ======
-colors[ImGuiCol_SliderGrab]       = ImColor(200, 0, 255, 255); // @RISHABHx999
-colors[ImGuiCol_SliderGrabActive] = ImColor(200, 0, 255, 255); // @RISHABHx999
-colors[ImGuiCol_CheckMark]        = ImColor(200, 0, 255, 255); // @RISHABHx999
+// ====== SLIDER / CHECKBOX - MAGENTA ======
+colors[ImGuiCol_SliderGrab]       = ImColor(200, 0, 255, 255);
+colors[ImGuiCol_SliderGrabActive] = ImColor(220, 60, 255, 255);
+colors[ImGuiCol_CheckMark]        = ImColor(200, 0, 255, 255);
 
 // ====== BORDER & WINDOW SETTINGS ======
-style.WindowBorderSize  = 3.0f;  // @RISHABHx999
-style.FrameBorderSize   = 2.0f;  // @RISHABHx999
-style.ChildBorderSize   = 3.0f;  // @RISHABHx999
-style.PopupBorderSize   = 2.0f;		// @RISHABHx999
+style.WindowBorderSize  = 0.0f;  // No borders
+style.FrameBorderSize   = 0.0f;  // No borders
+style.ChildBorderSize   = 0.0f;  // No borders
+style.PopupBorderSize   = 0.0f;  // No borders
 
 style.WindowRounding    = 12.0f;   // @RISHABHx999
-style.FrameRounding     = 8.0f;	// @RISHABHx999
-style.GrabRounding      = 0.0f;	// @RISHABHx999
-style.ChildRounding     = 12.0f;	// @RISHABHx999
+style.FrameRounding     = 8.0f; // @RISHABHx999
+style.GrabRounding      = 0.0f; // @RISHABHx999
+style.ChildRounding     = 12.0f;        // @RISHABHx999
 
-style.WindowPadding     = ImVec2(18.0f, 18.0f);	// @RISHABHx999
-style.FramePadding      = ImVec2(10.0f, 6.0f);	// @RISHABHx999
-style.ItemSpacing       = ImVec2(10.0f, 10.0f);	// @RISHABHx999
-style.ItemInnerSpacing  = ImVec2(6.0f, 6.0f);	// @RISHABHx999
+style.WindowPadding     = ImVec2(18.0f, 18.0f); // @RISHABHx999
+style.FramePadding      = ImVec2(10.0f, 6.0f);  // @RISHABHx999
+style.ItemSpacing       = ImVec2(10.0f, 10.0f); // @RISHABHx999
+style.ItemInnerSpacing  = ImVec2(6.0f, 6.0f);   // @RISHABHx999
 
 // ====== OPTIONAL FONT STYLE ======
 style.WindowTitleAlign  = ImVec2(0.5f, 0.5f); // @RISHABHx999
-style.DisplaySafeAreaPadding = ImVec2(0, 0);	// @RISHABHx999
+style.DisplaySafeAreaPadding = ImVec2(0, 0);    // @RISHABHx999
 
             io.ConfigWindowsMoveFromTitleBarOnly = true;
             io.IniFilename = NULL;
@@ -304,8 +254,8 @@ style.DisplaySafeAreaPadding = ImVec2(0, 0);	// @RISHABHx999
             icons_config.OversampleV = 2.5;
             
           io.Fonts->AddFontFromMemoryTTF(&PoppinsRegular, sizeof PoppinsRegular, 29, NULL, io.Fonts->GetGlyphRangesVietnamese());
-		  io.Fonts->AddFontFromMemoryCompressedTTF(font_awesome_data, font_awesome_size, 30.0f, &icons_config, icons_ranges);
-		  io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Custom), sizeof(Custom), 24.f, &CustomFont);
+                  io.Fonts->AddFontFromMemoryCompressedTTF(font_awesome_data, font_awesome_size, 30.0f, &icons_config, icons_ranges);
+                  io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Custom), sizeof(Custom), 24.f, &CustomFont);
          // memset(&Config, 0, sizeof(sConfig));
 //
 
@@ -396,39 +346,39 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
  // Window background = black
 
     ImGuiIO &io = ImGui::GetIO();
-	//Darkness();
-	// Thiết lập màu chủ đề
-	//ImVec4* colors = ImGui::GetStyle().Colors;
+        //Darkness();
+        // Thiết lập màu chủ đề
+        //ImVec4* colors = ImGui::GetStyle().Colors;
 
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame(g_GlWidth, g_GlHeight);
     ImGui::NewFrame();
-	if (ImGuiOK) {
-	    int touchCount = (((int (*)())(Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Input"), OBFUSCATE("get_touchCount"))))());
-	if (touchCount > 0) {
-		UnityEngine_Touch_Fields touch = ((UnityEngine_Touch_Fields(*)(int))(Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Input"), OBFUSCATE("GetTouch"), 1)))(0);
-		float reverseY = io.DisplaySize.y - touch.m_Position.fields.y;
-		switch (touch.m_Phase) {
-		case TouchPhase::Began:
-		case TouchPhase::Stationary:
-			io.MousePos = ImVec2(touch.m_Position.fields.x, reverseY);
-			io.MouseDown[0] = true;
-			break;
-		case TouchPhase::Ended:
-		case TouchPhase::Canceled:
-			io.MouseDown[0] = false;
-			clearMousePos = true;
-		break; case TouchPhase::Moved:
-			io.MousePos = ImVec2(touch.m_Position.fields.x, reverseY);
-		break; default:break;
-		}
-	}
-	}
-	
-	DrawESP(g_GlWidth, g_GlHeight);
-	
-	ImDrawList*draw = ImGui::GetBackgroundDrawList();
+        if (ImGuiOK) {
+            int touchCount = (((int (*)())(Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Input"), OBFUSCATE("get_touchCount"))))());
+        if (touchCount > 0) {
+                UnityEngine_Touch_Fields touch = ((UnityEngine_Touch_Fields(*)(int))(Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Input"), OBFUSCATE("GetTouch"), 1)))(0);
+                float reverseY = io.DisplaySize.y - touch.m_Position.fields.y;
+                switch (touch.m_Phase) {
+                case TouchPhase::Began:
+                case TouchPhase::Stationary:
+                        io.MousePos = ImVec2(touch.m_Position.fields.x, reverseY);
+                        io.MouseDown[0] = true;
+                        break;
+                case TouchPhase::Ended:
+                case TouchPhase::Canceled:
+                        io.MouseDown[0] = false;
+                        clearMousePos = true;
+                break; case TouchPhase::Moved:
+                        io.MousePos = ImVec2(touch.m_Position.fields.x, reverseY);
+                break; default:break;
+                }
+        }
+        }
+        
+        DrawESP(g_GlWidth, g_GlHeight);
+        
+        ImDrawList*draw = ImGui::GetBackgroundDrawList();
 
 //Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//
 
@@ -437,77 +387,100 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     #define ICON_FA_EYE "\xef\x81\xae"
     #define ICON_FA_FIRE "\xef\x81\xad"
     #define ICON_FA_USER_SECRET "\xef\x88\x9b"
-	
-    ImGui::SetNextWindowSize(ImVec2(650, 550), ImGuiCond_Once);
-	ImGui::Begin(OBFUSCATE(ICON_FA_SHIELD "  NIKU BIRTHDAY SPECIAL SRC BY RISHABH  "), 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar);
-	
-    ImDrawList* dl = ImGui::GetWindowDrawList();
-    ImVec2 pos = ImGui::GetWindowPos();
-    ImVec2 size = ImGui::GetWindowSize();
-
-    static int tab = 0; // 0:AIMBOT, 1:VISUAL, 2:BRUTAL, 3:CHAMS
-	
-    // ---- LEFT SIDE (Tabs) ----
-	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 45.0f);
-	ImGui::PushStyleColor(ImGuiCol_Border, ImColor(200, 0, 255, 200).Value);
-
-    ImGui::PopStyleColor();
-    ImGui::BeginChild("LeftTabs", ImVec2(200, 560), true);
-    ImGui::Spacing();
-    if (LeftNavButton("  AIMBOT", ICON_FA_CROSSHAIRS, tab == 0)) tab = 0;
-    ImGui::Spacing();
-    if (LeftNavButton("  VISUAL", ICON_FA_EYE, tab == 1)) tab = 1;
-    ImGui::Spacing();
-    if (LeftNavButton("  BRUTAL", ICON_FA_FIRE, tab == 2)) tab = 2;
-    ImGui::Spacing();
-    if (LeftNavButton("  INFO", ICON_FA_USER_SECRET, tab == 3)) tab = 3;
-    ImGui::EndChild();
-
-    ImGui::SameLine();
-
-    // ---- RIGHT SIDE (Tab Content) ----
-	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 45.0f);
-	ImGui::PushStyleColor(ImGuiCol_Border, ImColor(200, 0, 255, 200).Value);
-
-	ImGui::BeginChild("AimbotChild", ImVec2(450, 560), true);
-    ImGui::Spacing();
-    
-    switch (tab) {
-        case 0: // AIMBOT
-            RainbowToggleSwitch(" ACTIVE FUNCTION", &Enable);
-            ImGui::Spacing();
-            RainbowToggleSwitch(" AIMBOT", &Aimbot);
-            ImGui::Spacing();
-            ImGui::SliderFloat(("AIM FOV"), &Fov_Aim, 0.0f, 1000.0f, "%.0f°", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_NoInput);
-            if (ImGui::Button("JOIN TELEGRAM", ImVec2(250, 45))) 
-            {
-            OpenURL(Il2CppString::Create("https://t.me/+cTSklccrnJEzODdl"));
-            }
-            break;
-        case 1: // VISUAL
-            RainbowToggleSwitch(" ESP LINE", &Config.ESP.Line);
-            ImGui::Spacing();
-            RainbowToggleSwitch(" ESP BOX", &Config.ESP.Box);
-            ImGui::Spacing();
-            RainbowToggleSwitch(" ESP HEALTH", &Config.ESP.Health);
-            break;
-        case 2: // BRUTAL
-            RainbowToggleSwitch(" AIMKILL", &AimKill1);
-            ImGui::Spacing();
-            RainbowToggleSwitch(" SPEED 50x", &SpeedHack);
-            ImGui::Spacing();
-            break;
-        case 3: // INFO
+    #define ICON_FA_TIMES "\xef\x80\x8d"
         
-        // YAHA PE AP LOG APNA INFO DAL LENA OKK AND BHAI CREDIT DEDENA 🥲
+    static bool show_menu = true;
+    
+    if (show_menu) {
+        ImGui::SetNextWindowSize(ImVec2(560, 480), ImGuiCond_Once);
+        ImGui::Begin(OBFUSCATE("DEXXTER MOD APK V1"), &show_menu, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar);
+        
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        ImVec2 pos = ImGui::GetWindowPos();
+        ImVec2 size = ImGui::GetWindowSize();
+        
+        ImVec2 close_btn_pos = ImVec2(pos.x + size.x - 40, pos.y + 8);
+        ImGui::SetCursorScreenPos(close_btn_pos);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(200, 0, 255, 100).Value);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor(200, 0, 255, 180).Value);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImColor(200, 0, 255, 255).Value);
+        if (ImGui::Button(ICON_FA_TIMES, ImVec2(28, 28))) {
+            show_menu = false;
+        }
+        ImGui::PopStyleColor(4);
+        
+        ImGui::SetCursorPos(ImVec2(8, 45));
 
-            break;
+        static int tab = 0;
+        
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 12.0f);
+
+        ImGui::BeginChild("LeftTabs", ImVec2(96, 420), true);
+        ImGui::SetCursorPosY(8);
+        if (LeftNavButton("AIMBOT", ICON_FA_CROSSHAIRS, tab == 0)) tab = 0;
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+        if (LeftNavButton("VISUAL", ICON_FA_EYE, tab == 1)) tab = 1;
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+        if (LeftNavButton("BRUTAL", ICON_FA_FIRE, tab == 2)) tab = 2;
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+        if (LeftNavButton("INFO", ICON_FA_USER_SECRET, tab == 3)) tab = 3;
+        ImGui::EndChild();
+        ImGui::PopStyleVar();
+
+        ImGui::SameLine();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 12.0f);
+
+        ImGui::BeginChild("ContentChild", ImVec2(440, 420), true);
+        
+        ImVec2 content_pos = ImGui::GetCursorScreenPos();
+        dl->AddLine(ImVec2(content_pos.x + 10, content_pos.y + 8), 
+                    ImVec2(content_pos.x + 420, content_pos.y + 8), 
+                    IM_COL32(255, 255, 255, 180), 1.0f);
+        
+        ImGui::SetCursorPosY(18);
+        
+        switch (tab) {
+            case 0:
+                StyledCheckbox(" ACTIVE FUNCTION", &Enable);
+                ImGui::Spacing();
+                StyledCheckbox(" AIMBOT", &Aimbot);
+                ImGui::Spacing();
+                ImGui::SliderFloat(("AIM FOV"), &Fov_Aim, 0.0f, 1000.0f, "%.0f°", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_NoInput);
+                ImGui::Spacing();
+                if (ImGui::Button("JOIN TELEGRAM", ImVec2(250, 40))) 
+                {
+                    OpenURL(Il2CppString::Create("https://t.me/+cTSklccrnJEzODdl"));
+                }
+                break;
+            case 1:
+                StyledCheckbox(" ESP LINE", &Config.ESP.Line);
+                ImGui::Spacing();
+                StyledCheckbox(" ESP BOX", &Config.ESP.Box);
+                ImGui::Spacing();
+                StyledCheckbox(" ESP HEALTH", &Config.ESP.Health);
+                break;
+            case 2:
+                StyledCheckbox(" AIMKILL", &AimKill1);
+                ImGui::Spacing();
+                StyledCheckbox(" SPEED 50x", &SpeedHack);
+                ImGui::Spacing();
+                break;
+            case 3:
+                ImGui::TextColored(ImVec4(0.8f, 0.0f, 1.0f, 1.0f), "DEXXTER MOD APK V1");
+                ImGui::Spacing();
+                ImGui::Text("Developed by @RISHABHx999");
+                ImGui::Spacing();
+                ImGui::TextWrapped("Premium mod menu with advanced features.");
+                break;
+        }
+
+        ImGui::EndChild();
+        ImGui::PopStyleVar();
+        
+        ImGui::End();
     }
-
-    ImGui::EndChild();
-    ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         return old_eglSwapBuffers(dpy, surface);
@@ -542,7 +515,7 @@ inline void StartGUI() {
     if (NULL != ptr_eglSwapBuffer) {
         DobbyHook((void *)ptr_eglSwapBuffer, (void*)hook_eglSwapBuffers, (void**)&old_eglSwapBuffers);
             LOGD("Gui Started");
-			hack_injec();
+                        hack_injec();
         }
     }
 
@@ -678,13 +651,13 @@ bool is_current_process(const char* target_name) {
 
 
 void hack_injec() {
-	while (!unityMap.isValid()) {
+        while (!unityMap.isValid()) {
         unityMap = KittyMemory::getLibraryBaseMap("libunity.so");
-		anogsMap = KittyMemory::getLibraryBaseMap("libanogs.so");
-		il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
-		
+                anogsMap = KittyMemory::getLibraryBaseMap("libanogs.so");
+                il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+                
         sleep(6);
-	}
+        }
     
  sleep(5);
     Il2CppAttach();
@@ -696,7 +669,7 @@ void hack_injec() {
     }
 
 A64HookFunction(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("UpdateBehavior"), 2), (void *) _LateUpdate, (void **) &LateUpdate);
-   	OpenURL = (void (*)(String *))Il2CppGetMethodOffset("UnityEngine.CoreModule.dll","UnityEngine","Application","OpenURL",1);
+        OpenURL = (void (*)(String *))Il2CppGetMethodOffset("UnityEngine.CoreModule.dll","UnityEngine","Application","OpenURL",1);
 
     ImGuiOK = true;
     
@@ -704,11 +677,11 @@ A64HookFunction(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCAT
 
 
 void hack_thread(pid_t pid) {
-	
-	StartGUI();
-	while(pid == -1){pid = get_pid_by_name("com.dts.freefireth");} 
-	remote_inject(pid);
-	writeLog(to_string(pid));
+        
+        StartGUI();
+        while(pid == -1){pid = get_pid_by_name("com.dts.freefireth");} 
+        remote_inject(pid);
+        writeLog(to_string(pid));
     
 }
 
