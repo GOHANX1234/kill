@@ -43,7 +43,6 @@ std::string g_Token, g_Auth;
 ImFont* poppins_mediumf = nullptr;
 ImFont* poppins_medium_low = nullptr;
 
-//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
@@ -143,20 +142,20 @@ bool StyledCheckbox(const char* label, bool* v)
 }
 
 // --- Left Nav Button (tab button) - Icon Only Version ---
-static bool LeftNavButton(const char* label, const char* icon, bool selected, ImVec2 size = ImVec2(80, 70)) {
+static bool LeftNavButton(const char* label, const char* icon, bool selected, ImVec2 size = ImVec2(84, 90)) {
     ImDrawList* dl = ImGui::GetWindowDrawList();
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
 
     ImU32 icon_bg_col = IM_COL32(200, 0, 255, 255);
     
-    ImVec2 icon_rect_min(pos.x + 8, pos.y + 8);
-    ImVec2 icon_rect_max(pos.x + size.x - 8, pos.y + size.y - 8);
-    dl->AddRectFilled(icon_rect_min, icon_rect_max, icon_bg_col, 10.0f);
+    ImVec2 icon_rect_min(pos.x + 6, pos.y + 6);
+    ImVec2 icon_rect_max(pos.x + size.x - 6, pos.y + size.y - 6);
+    dl->AddRectFilled(icon_rect_min, icon_rect_max, icon_bg_col, 5.0f);
     
     ImFont* small_font = ImGui::GetIO().Fonts->Fonts[0];
     ImVec2 icon_size = small_font->CalcTextSizeA(20.0f, FLT_MAX, 0.0f, icon);
-    ImVec2 icon_pos(pos.x + (size.x - icon_size.x) * 0.5f, pos.y + (size.y - icon_size.y) * 0.5f - 1);
+    ImVec2 icon_pos(pos.x + (size.x - icon_size.x) * 0.5f, pos.y + (size.y - icon_size.y) * 0.5f);
     
     dl->AddText(small_font, 20.0f, icon_pos, IM_COL32(255,255,255,255), icon);
 
@@ -181,24 +180,24 @@ ImGui_ImplOpenGL3_Init("#version 300 es");
 
             ImGuiIO &io = ImGui::GetIO();
             
-// PAPAJI RISHABH UI JO CREDIT NAHI DEGA VO RANDI KA BACCHA 😡
+// 
 ImGuiStyle& style = ImGui::GetStyle();
 ImVec4* colors = style.Colors;
 
 // ====== WINDOW COLORS - PURPLE/MAGENTA THEME ======
-colors[ImGuiCol_WindowBg]         = ImColor(15, 15, 20, 245);     // Dark purple background
-colors[ImGuiCol_ChildBg]          = ImColor(18, 18, 25, 240);     // Slightly lighter dark
-colors[ImGuiCol_PopupBg]          = ImColor(20, 20, 28, 250);     // Popup dark background
+colors[ImGuiCol_WindowBg]         = ImColor(0, 0, 0, 255);        // Pure black background
+colors[ImGuiCol_ChildBg]          = ImColor(0, 0, 0, 255);        // Pure black background
+colors[ImGuiCol_PopupBg]          = ImColor(0, 0, 0, 255);        // Pure black background
 colors[ImGuiCol_Border]           = ImColor(200, 0, 255, 0);      // No borders
 colors[ImGuiCol_BorderShadow]     = ImVec4(0, 0, 0, 0);
-colors[ImGuiCol_TitleBg]          = ImColor(120, 40, 180, 255);   // Full purple/magenta title
-colors[ImGuiCol_TitleBgActive]    = ImColor(150, 50, 200, 255);   // Active purple/magenta title
-colors[ImGuiCol_TitleBgCollapsed] = ImColor(100, 30, 160, 255);   // Collapsed purple/magenta
+colors[ImGuiCol_TitleBg]          = ImColor(200, 0, 255, 255);    // Permanent purple title
+colors[ImGuiCol_TitleBgActive]    = ImColor(200, 0, 255, 255);    // Permanent purple title
+colors[ImGuiCol_TitleBgCollapsed] = ImColor(200, 0, 255, 255);    // Permanent purple title
 
 // ====== BUTTON COLORS - PURPLE/MAGENTA ======
-colors[ImGuiCol_Button]           = ImColor(120, 40, 180, 255);   // Purple button
-colors[ImGuiCol_ButtonHovered]    = ImColor(160, 60, 220, 255);   // Lighter purple on hover
-colors[ImGuiCol_ButtonActive]     = ImColor(200, 0, 255, 255);    // Magenta when active
+colors[ImGuiCol_Button]           = ImColor(200, 0, 255, 255);    // Permanent purple button
+colors[ImGuiCol_ButtonHovered]    = ImColor(200, 0, 255, 255);    // Permanent purple button
+colors[ImGuiCol_ButtonActive]     = ImColor(200, 0, 255, 255);    // Permanent purple button
 
 // ====== TEXT COLORS ======
 colors[ImGuiCol_Text]             = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
@@ -225,19 +224,19 @@ style.FrameBorderSize   = 0.0f;  // No borders
 style.ChildBorderSize   = 0.0f;  // No borders
 style.PopupBorderSize   = 0.0f;  // No borders
 
-style.WindowRounding    = 12.0f;   // @RISHABHx999
-style.FrameRounding     = 8.0f; // @RISHABHx999
-style.GrabRounding      = 0.0f; // @RISHABHx999
-style.ChildRounding     = 12.0f;        // @RISHABHx999
+style.WindowRounding    = 12.0f;   //
+style.FrameRounding     = 8.0f; //
+style.GrabRounding      = 0.0f; //
+style.ChildRounding     = 12.0f;        //
 
-style.WindowPadding     = ImVec2(18.0f, 18.0f); // @RISHABHx999
-style.FramePadding      = ImVec2(10.0f, 6.0f);  // @RISHABHx999
-style.ItemSpacing       = ImVec2(10.0f, 10.0f); // @RISHABHx999
-style.ItemInnerSpacing  = ImVec2(6.0f, 6.0f);   // @RISHABHx999
+style.WindowPadding     = ImVec2(18.0f, 18.0f); //
+style.FramePadding      = ImVec2(10.0f, 6.0f);  // 
+style.ItemSpacing       = ImVec2(10.0f, 10.0f); // 
+style.ItemInnerSpacing  = ImVec2(6.0f, 6.0f);   //
 
 // ====== OPTIONAL FONT STYLE ======
-style.WindowTitleAlign  = ImVec2(0.5f, 0.5f); // @RISHABHx999
-style.DisplaySafeAreaPadding = ImVec2(0, 0);    // @RISHABHx999
+style.WindowTitleAlign  = ImVec2(0.5f, 0.5f); //
+style.DisplaySafeAreaPadding = ImVec2(0, 0);    //
 
             io.ConfigWindowsMoveFromTitleBarOnly = true;
             io.IniFilename = NULL;
@@ -380,7 +379,7 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         
         ImDrawList*draw = ImGui::GetBackgroundDrawList();
 
-//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//
+
 
     // Font Awesome icon defines
     #define ICON_FA_CROSSHAIRS "\xef\x81\x9b"
@@ -392,7 +391,7 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     static bool show_menu = true;
     
     if (show_menu) {
-        ImGui::SetNextWindowSize(ImVec2(560, 480), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(620, 410), ImGuiCond_Once);
         ImGui::Begin(OBFUSCATE("DEXXTER MOD APK V1"), &show_menu, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar);
         
         ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -416,30 +415,30 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         
         ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 12.0f);
 
-        ImGui::BeginChild("LeftTabs", ImVec2(96, 420), true);
+        ImGui::BeginChild("LeftTabs", ImVec2(96, 350), true);
         ImGui::SetCursorPosY(8);
         if (LeftNavButton("AIMBOT", ICON_FA_CROSSHAIRS, tab == 0)) tab = 0;
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 14);
         if (LeftNavButton("VISUAL", ICON_FA_EYE, tab == 1)) tab = 1;
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 14);
         if (LeftNavButton("BRUTAL", ICON_FA_FIRE, tab == 2)) tab = 2;
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 14);
         if (LeftNavButton("INFO", ICON_FA_USER_SECRET, tab == 3)) tab = 3;
         ImGui::EndChild();
         ImGui::PopStyleVar();
 
-        ImGui::SameLine();
+        ImGui::SameLine(0, 4);
 
         ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 12.0f);
 
-        ImGui::BeginChild("ContentChild", ImVec2(440, 420), true);
+        ImGui::BeginChild("ContentChild", ImVec2(500, 350), true);
         
         ImVec2 content_pos = ImGui::GetCursorScreenPos();
-        dl->AddLine(ImVec2(content_pos.x + 10, content_pos.y + 8), 
-                    ImVec2(content_pos.x + 420, content_pos.y + 8), 
+        dl->AddLine(ImVec2(content_pos.x + 4, content_pos.y + 16), 
+                    ImVec2(content_pos.x + 500, content_pos.y + 16), 
                     IM_COL32(255, 255, 255, 180), 1.0f);
         
-        ImGui::SetCursorPosY(18);
+        ImGui::SetCursorPosY(26);
         
         switch (tab) {
             case 0:
@@ -451,7 +450,7 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
                 ImGui::Spacing();
                 if (ImGui::Button("JOIN TELEGRAM", ImVec2(250, 40))) 
                 {
-                    OpenURL(Il2CppString::Create("https://t.me/+cTSklccrnJEzODdl"));
+                    OpenURL(Il2CppString::Create("https://t.me/Gohan52"));
                 }
                 break;
             case 1:
@@ -470,7 +469,7 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
             case 3:
                 ImGui::TextColored(ImVec4(0.8f, 0.0f, 1.0f, 1.0f), "DEXXTER MOD APK V1");
                 ImGui::Spacing();
-                ImGui::Text("Developed by @RISHABHx999");
+                ImGui::Text("Developed by @Gohan52");
                 ImGui::Spacing();
                 ImGui::TextWrapped("Premium mod menu with advanced features.");
                 break;
@@ -700,7 +699,3 @@ void lib_main()
 }
 //REGISTER_ZYGISK_MODULE(MyModule)
 
-// SRC FULLY CREDIT BY : @RISHABHx999
-// JISNE CREDIT HATAYA USKI MAA MUJHSE CHUD TI HE 😂
-
-//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//Aimkill By @RISHABHx999//
